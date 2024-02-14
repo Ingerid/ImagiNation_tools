@@ -1,7 +1,42 @@
+
+
 import dhlab as dh
 import pandas as pd
 import dhlab.graph_networkx_louvain as gnl
 import networkx as nx
+import requests
+import json
+from io import StringIO
+
+
+def imag_corpus():
+    res =  requests.get(f"{dh.constants.BASE_URL}/imagination/all")
+    if res.status_code == 200:
+        data = json.loads(res.text)
+    else:
+        data = "[]"
+    return pd.DataFrame(data)
+
+def geo_locations(dhlabid):
+    res = requests.get(f"{dh.constants.BASE_URL}/imagination_geo_data", params={"dhlabid":dhlabid})
+    if res.status_code == 200:
+        data = pd.read_json(StringIO(res.text))
+    else:
+        data = pd.DataFrame()
+    return data
+                       
+
+def get_imag_corpus():
+    im = imag_corpus()
+    c = dh.Corpus()
+    c.extend_from_identifiers(im.urn)
+    corpus = c.frame
+    corpus.dhlabid = corpus.dhlabid.astype(int)
+    return corpus
+
+
+def imag_corpus():
+    return requests.get(f"{dh.BASE_URL}/imagination/all")
 
 def make_collocation_graph(corpus, target_word, top=15, before=4, after=4, ref = None, limit=1000):
     """Make a cascaded network of collocations ref is a frequency list"""
