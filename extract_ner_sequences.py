@@ -3,7 +3,7 @@ import json
 import sqlite3
 
 # define a function to query the NER annotation database
-def query_nerdb( query,  params=(), dbpath = './nerdb.db'):
+def query_nerdb( query,  params=(), dbpath = 'nerdb.db'):
     with sqlite3.connect(dbpath) as conn:
         cursor = conn.cursor()
         cursor.execute(query, params)
